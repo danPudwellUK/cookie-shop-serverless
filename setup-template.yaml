@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Setup template for cookie-shop-serverless
+
+Resources:
+  SamS3BucketParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /build/SAM_S3_BUCKET
+      Type: String
+      Value: cookie-shop-serverless-output-bucket
+  CodebuildOutputS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: cookie-shop-serverless-output-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
