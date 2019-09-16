@@ -85,12 +85,6 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "id"
           AttributeType: "S"
-        - AttributeName: "name"
-          AttributeType: "S"
-        - AttributeName: "description"
-          AttributeType: "S"
-        - AttributeName: "quantity"
-          AttributeType: "N"
       BillingMode: "PAY_PER_REQUEST"
       KeySchema:
         - AttributeName: "id"
