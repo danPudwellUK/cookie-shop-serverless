@@ -20,6 +20,49 @@ Globals:
         LoggingLevel: "INFO"
     TracingEnabled: false
 Resources:
+  LambdaLoggingPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "lambda-logging-Policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+      Roles:
+        - !Ref CookiesLambdaRole
+        - !Ref OrdersLambdaRole
+
+  CookiesLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  OrdersLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
   CookiesGetLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -31,6 +74,14 @@ Resources:
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
+      Events:
+        CookiesGetApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CookiesApiGateway
+            Path: /cookies
+            Method: GET
+      Role: !GetAtt CookiesLambdaRole.Arn
 
   CookiesPostLambda:
     Type: 'AWS::Serverless::Function'
@@ -43,20 +94,34 @@ Resources:
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
+      CookiesPostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CookiesApiGateway
+            Path: /cookies
+            Method: POST
+      Role: !GetAtt CookiesLambdaRole.Arn
 
   OrdersPostLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: 'orders.post_handler'
       CodeUri: .
-      Description: 'order cookies'
+      Description: 'Order cookies'
       Policies:
         - AWSLambdaExecute
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref OrdersDynamoTable
+      OrdersPostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CookiesApiGateway
+            Path: /orders
+            Method: POST
+      Role: !GetAtt OrdersLambdaRole.Arn
 
-  CookieApiGateway:
+  CookiesApiGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: !Sub "cookie-shop-serverless-api"
@@ -68,6 +133,42 @@ Resources:
               "Fn::Sub":
                 "s3://${S3Bucket}/swagger.yaml"
       StageName: Prod
+
+  CookiesTablePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "cookies-table-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:Query
+              - dynamodb:PutItem
+              - dynamodb:DeleteItem
+              - dynamodb:GetItem
+              - dynamodb:Scan
+            Resource: !GetAtt CookiesDynamoTable.Arn
+      Roles:
+        - !Ref CookiesLambdaRole
+
+    OrdersTablePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "orders-table-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:Query
+              - dynamodb:PutItem
+              - dynamodb:DeleteItem
+              - dynamodb:GetItem
+              - dynamodb:Scan
+            Resource: !GetAtt OrdersDynamoTable.Arn
+      Roles:
+        - !Ref OrdersLambdaRole
 
   CookiesDynamoTable:
     Type: AWS::Serverless::SimpleTable
