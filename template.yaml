@@ -31,7 +31,6 @@ Resources:
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
-      Role: !GetAtt LambdaRole.Arn
 
   CookiesPostLambda:
     Type: 'AWS::Serverless::Function'
@@ -44,7 +43,6 @@ Resources:
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
-      Role: !GetAtt LambdaRole.Arn
 
   OrdersPostLambda:
     Type: 'AWS::Serverless::Function'
@@ -57,7 +55,6 @@ Resources:
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref OrdersDynamoTable
-      Role: !GetAtt LambdaRole.Arn
 
   CookieApiGateway:
     Type: AWS::Serverless::Api
