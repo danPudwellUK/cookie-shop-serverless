@@ -154,7 +154,7 @@ Resources:
       Roles:
         - !Ref CookiesLambdaRole
 
-    OrdersTablePolicy:
+  OrdersTablePolicy:
     Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Sub "orders-table-policy"
