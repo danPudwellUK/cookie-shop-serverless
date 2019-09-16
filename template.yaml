@@ -94,7 +94,8 @@ Resources:
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
-      CookiesPostApi:
+      Events:
+        CookiesPostApi:
           Type: Api
           Properties:
             RestApiId: !Ref CookiesApiGateway
@@ -113,7 +114,8 @@ Resources:
       Environment:
         Variables:
           COOKIES_TABLE_NAME: !Ref OrdersDynamoTable
-      OrdersPostApi:
+      Events:
+        OrdersPostApi:
           Type: Api
           Properties:
             RestApiId: !Ref CookiesApiGateway
