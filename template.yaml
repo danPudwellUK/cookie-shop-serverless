@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Specification template for cookies
+Parameters:
+  S3Bucket:
+    Type : String
+    Default: "bucket value will be overriden in buildspec"
+Globals:
+  Function:
+    Runtime: python3.7
+    Timeout: 3
+    MemorySize: 128
+  Api:
+    EndpointConfiguration: REGIONAL
+    MethodSettings:
+      - HttpMethod: "*"
+        ResourcePath: "/*"
+        MetricsEnabled: false
+        DataTraceEnabled: false
+        LoggingLevel: "INFO"
+    TracingEnabled: false
+Resources:
+  CookiesGetLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'cookies.get_handler'
+      CodeUri: .
+      Description: 'Get cookies to order'
+      Policies:
+        - AWSLambdaExecute
+      Environment:
+        Variables:
+          COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
+      Role: !GetAtt LambdaRole.Arn
+
+  CookiesPostLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'cookies.post_handler'
+      CodeUri: .
+      Description: 'Add cookies to order'
+      Policies:
+        - AWSLambdaExecute
+      Environment:
+        Variables:
+          COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
+      Role: !GetAtt LambdaRole.Arn
+
+  OrdersPostLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'orders.post_handler'
+      CodeUri: .
+      Description: 'order cookies'
+      Policies:
+        - AWSLambdaExecute
+      Environment:
+        Variables:
+          COOKIES_TABLE_NAME: !Ref OrdersDynamoTable
+      Role: !GetAtt LambdaRole.Arn
+
+  CookieApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "cookie-shop-serverless-api"
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location:
+              "Fn::Sub":
+                "s3://${S3Bucket}/swagger.yaml"
+      StageName: Prod
+
+  CookiesDynamoTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: Cookies
+      PrimaryKey:
+        Name: id
+        Type: String
+      SSESpecification:
+        SSEEnabled: true
+
+  OrdersDynamoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        - AttributeName: "name"
+          AttributeType: "S"
+        - AttributeName: "description"
+          AttributeType: "S"
+        - AttributeName: "quantity"
+          AttributeType: "N"
+      BillingMode: "PAY_PER_REQUEST"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+      SSESpecification:
+        SSEEnabled: true
+
+  

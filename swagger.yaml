@@ -1,0 +1,116 @@
+openapi: 3.0.2
+info:
+  version: "0.1"
+  title: Cookie Shop API
+  description: API forcookies
+
+paths:
+  /cookies:
+    get:
+      description: get a list of cookies for sale
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CookiesResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CookiesGetLambda.Arn}/invocations"
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+    post:
+      description: add cookies to sell
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CookieRequest"
+        required: true
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CookieResponse"
+        400:        
+          description: Bad request
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CookiesPostLambda.Arn}/invocations"
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /orders:
+    post:
+      description: order some cookies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        400:        
+          description: Bad request
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OrdersPostLambda.Arn}/invocations"
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+
+components:
+  schemas:
+    CookieRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: string
+    CookiesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/CookieResponse"
+    CookieResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: string
+    OrderRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        quantity:
+          type: string
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+
+    
+    
+    
+    
+    
+    
