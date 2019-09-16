@@ -97,5 +97,3 @@ Resources:
           KeyType: "HASH"
       SSESpecification:
         SSEEnabled: true
-
-  
