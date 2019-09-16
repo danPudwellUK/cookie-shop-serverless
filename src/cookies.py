@@ -28,6 +28,7 @@ def post_handler(event, context):
             "description": event_data['description'],
             "quantity": event_data['quantity']
         }
+        print(data)
         dynamodb.put_item(Item=data)
 
         return {
