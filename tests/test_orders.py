@@ -76,3 +76,28 @@ class OrderStreamTests(unittest.TestCase):
         mock_dynamo.return_value.Table.return_value = mock_table
 
         orders.stream_handler(event, None)
+
+    @patch("boto3.resource")
+    def test_update_cookie_unsuccessfully(self, mock_dynamo):
+
+        event = {
+            "Records": [{
+                "dynamodb": {
+                    "NewImage": {
+                        "cookie_id": {
+                            "S": "uuid"
+                        },
+                        "quantity": {
+                            "N": "1"
+                        }
+                    }
+                }    
+            }]
+        }
+
+        mock_table = MagicMock()
+        mock_table.get_item.return_value = {}
+        mock_table.put_item.return_value = {}
+        mock_dynamo.return_value.Table.return_value = mock_table
+
+        orders.stream_handler(event, None)
