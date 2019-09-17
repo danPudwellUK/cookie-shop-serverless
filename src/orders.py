@@ -3,11 +3,9 @@ import json
 import os
 import uuid
 from http import HTTPStatus
-from aws_dynamodb_parser import parse
 
 
 ORDERS_DYNAMO_TABLE = os.environ.get("ORDERS_TABLE_NAME")
-COOKIES_DYNAMO_TABLE = os.environ.get("COOKIES_TABLE_NAME")
 
 
 def post_handler(event, context):
@@ -33,16 +31,3 @@ def post_handler(event, context):
         return {
             "statusCode": HTTPStatus.BAD_REQUEST
         }
-
-def stream_handler(event, context):
-    try:
-        dynamodb = boto3.resource("dynamodb").Table(COOKIES_DYNAMO_TABLE)
-
-        for record in event['Records']:
-            entry = parse(record["dynamodb"]["NewImage"])
-            cookie_item = dynamodb.get_item(Key={"id": entry['cookie_id']})
-            cookie_item["Item"]['quantity'] = cookie_item["Item"]['quantity'] - entry['quantity']
-            dynamodb.put_item(Item=cookie_item)
-
-    except Exception as e:
-        print("There was a problem: {}".format(e))
