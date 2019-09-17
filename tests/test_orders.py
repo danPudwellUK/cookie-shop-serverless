@@ -11,7 +11,7 @@ class OrderPostTests(unittest.TestCase):
     def test_put_order_successfully(self, mock_dynamo):
 
         test_order = {
-            "id": str(uuid.uuid4()),
+            "cookie_id": str(uuid.uuid4()),
             "quantity": 1
         }
         event = {
