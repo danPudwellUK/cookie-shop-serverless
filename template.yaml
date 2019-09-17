@@ -161,7 +161,6 @@ Resources:
           - Effect: Allow
             Action:
               - dynamodb:PutItem
-              - dynamodb:Scan
             Resource: !GetAtt OrdersDynamoTable.Arn
       Roles:
         - !Ref OrdersLambdaRole
