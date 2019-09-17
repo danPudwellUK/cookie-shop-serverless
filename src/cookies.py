@@ -11,10 +11,10 @@ COOKIES_DYNAMO_TABLE = os.environ.get("COOKIES_TABLE_NAME")
 def get_handler(event, context):
     dynamodb = boto3.resource("dynamodb").Table(COOKIES_DYNAMO_TABLE)
     cookies = dynamodb.scan().get("Items", [])
-    print(cookies)
+
     return {
         "statusCode": HTTPStatus.OK,
-        "body": json.dumps(cookies)
+        "body": json.dumps(cookies, cls=DecimalEncoder)
     }
 
 
@@ -39,3 +39,7 @@ def post_handler(event, context):
         return {
             "statusCode": HTTPStatus.BAD_REQUEST
         }
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        return int(o)

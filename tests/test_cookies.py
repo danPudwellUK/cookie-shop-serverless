@@ -4,6 +4,7 @@ import uuid
 from src import cookies
 from http import HTTPStatus
 import json
+from decimal import Decimal
 
 
 class CookieGetTests(unittest.TestCase):
@@ -12,7 +13,7 @@ class CookieGetTests(unittest.TestCase):
         "id": str(uuid.uuid4()),
         "name": "Chocolate Chip",
         "description": "It's very good",
-        "quantity": 10
+        "quantity": Decimal('10')
     }
     @patch("boto3.resource")
     def test_get_cookies_successfully(self, mock_dynamo):
