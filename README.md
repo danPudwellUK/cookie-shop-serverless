@@ -10,3 +10,5 @@ We will be using SAM (https://github.com/awslabs/serverless-application-model)
 3) Run the setup-template.yaml in AWS Cloudformation
 
 4) Create a CodeBuild project
+
+5) Run the build

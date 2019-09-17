@@ -9,6 +9,7 @@ Resources:
       Name: /build/SAM_S3_BUCKET
       Type: String
       Value: cookie-shop-serverless-build-bucket
+
   CodebuildOutputS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -18,3 +19,25 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+
+  CodebuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: codebuild-cookie-shop-build-service-role
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaFullAccess
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+        - arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action: 
+              - sts:AssumeRole

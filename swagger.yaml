@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   version: "0.1"
   title: Cookie Shop API
-  description: API forcookies
+  description: API for cookies
 
 paths:
   /cookies:

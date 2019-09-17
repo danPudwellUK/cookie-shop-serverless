@@ -68,7 +68,7 @@ Resources:
     Properties:
       Handler: 'cookies.get_handler'
       CodeUri: .
-      Description: 'Get cookies to order'
+      Description: 'Get cookies for order'
       Policies:
         - AWSLambdaExecute
       Environment:
@@ -88,7 +88,7 @@ Resources:
     Properties:
       Handler: 'cookies.post_handler'
       CodeUri: .
-      Description: 'Add cookies to order'
+      Description: 'Add cookies to shop'
       Policies:
         - AWSLambdaExecute
       Environment:
