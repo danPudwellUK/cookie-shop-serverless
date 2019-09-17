@@ -11,7 +11,7 @@ COOKIES_DYNAMO_TABLE = os.environ.get("COOKIES_TABLE_NAME")
 def get_handler(event, context):
     dynamodb = boto3.resource("dynamodb").Table(COOKIES_DYNAMO_TABLE)
     cookies = dynamodb.scan().get("Items", [])
-
+    print(cookies)
     return {
         "statusCode": HTTPStatus.OK,
         "body": json.dumps(cookies)
