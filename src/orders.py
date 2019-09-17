@@ -24,13 +24,13 @@ def post_handler(event, context):
         print("******************")
         print(data)
         dynamodb.put_item(Item=data)
-        
+
         return {
             "statusCode": HTTPStatus.CREATED,
             "body": json.dumps(data)
         }
-    except:
-        print("There was a problem")
+    except Exception as e:
+        print("There was a problem: {}".format(e))
         return {
             "statusCode": HTTPStatus.BAD_REQUEST
         }
