@@ -36,6 +36,7 @@ Resources:
       Roles:
         - !Ref CookiesLambdaRole
         - !Ref OrdersLambdaRole
+        - !Ref OrdersStreamLambdaRole
 
   CookiesLambdaRole:
     Type: AWS::IAM::Role
@@ -51,6 +52,21 @@ Resources:
               - sts:AssumeRole
 
   OrdersLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+    
+  OrdersStreamLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -123,6 +139,19 @@ Resources:
             Method: POST
       Role: !GetAtt OrdersLambdaRole.Arn
 
+  OrdersStreamLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'orders.stream_handler'
+      CodeUri: .
+      Description: 'Update cookies quantity from order'
+      Policies:
+        - AWSLambdaExecute
+      Environment:
+        Variables:
+          COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
+      Role: !GetAtt OrdersStreamLambdaRole.Arn
+
   CookiesApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -147,9 +176,11 @@ Resources:
             Action:
               - dynamodb:PutItem
               - dynamodb:Scan
+              - dynamodb:GetItem
             Resource: !GetAtt CookiesDynamoTable.Arn
       Roles:
         - !Ref CookiesLambdaRole
+        - !Ref OrdersStreamLambdaRole
 
   OrdersTablePolicy:
     Type: AWS::IAM::Policy
@@ -187,3 +218,16 @@ Resources:
           KeyType: "HASH"
       SSESpecification:
         SSEEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  OrdersStream:
+    Type: AWS::Lambda::EventSourceMapping
+    DependsOn:
+      - DynamoRequestsStreamPolicy
+    Properties:
+      BatchSize: 1
+      Enabled: True
+      EventSourceArn: !GetAtt OrdersDynamoTable.StreamArn
+      FunctionName: !GetAtt OrdersStreamLambda.Arn
+      StartingPosition: LATEST

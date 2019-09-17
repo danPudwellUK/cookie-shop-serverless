@@ -1,9 +1,10 @@
 import unittest
 from unittest.mock import MagicMock, patch
-import uuid
 from src import orders
 from http import HTTPStatus
 import json
+from decimal import Decimal
+
 
 class OrderPostTests(unittest.TestCase):
 
@@ -11,7 +12,7 @@ class OrderPostTests(unittest.TestCase):
     def test_put_order_successfully(self, mock_dynamo):
 
         test_order = {
-            "cookie_id": str(uuid.uuid4()),
+            "cookie_id": "uuid",
             "quantity": 1
         }
         event = {
@@ -39,3 +40,39 @@ class OrderPostTests(unittest.TestCase):
 
         response = orders.post_handler(event, None)
         self.assertEqual(response["statusCode"], HTTPStatus.BAD_REQUEST)
+
+class OrderStreamTests(unittest.TestCase):
+
+    TEST_COOKIE = {
+        "id": "uuid",
+        "name": "Chocolate Chip",
+        "description": "It's very good",
+        "quantity": Decimal('10')
+    }
+
+    @patch("boto3.resource")
+    def test_update_cookie_successfully(self, mock_dynamo):
+
+        event = {
+            "Records": [{
+                "dynamodb": {
+                    "NewImage": {
+                        "cookie_id": {
+                            "S": "uuid"
+                        },
+                        "quantity": {
+                            "N": "1"
+                        }
+                    }
+                }    
+            }]
+        }
+
+        mock_table = MagicMock()
+        mock_table.get_item.return_value = {
+            "Item": self.TEST_COOKIE.copy()
+        }
+        mock_table.put_item.return_value = {}
+        mock_dynamo.return_value.Table.return_value = mock_table
+
+        orders.stream_handler(event, None)

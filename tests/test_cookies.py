@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import MagicMock, patch
-import uuid
 from src import cookies
 from http import HTTPStatus
 import json
@@ -10,7 +9,7 @@ from decimal import Decimal
 class CookieGetTests(unittest.TestCase):
 
     TEST_COOKIE = {
-        "id": str(uuid.uuid4()),
+        "id": "uuid",
         "name": "Chocolate Chip",
         "description": "It's very good",
         "quantity": Decimal('10')
