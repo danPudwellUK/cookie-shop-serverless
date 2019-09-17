@@ -239,6 +239,8 @@ Resources:
 
   OrdersStream:
     Type: AWS::Lambda::EventSourceMapping
+    DependsOn:
+      - DynamoStreamPolicy
     Properties:
       BatchSize: 1
       Enabled: True
