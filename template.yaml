@@ -194,6 +194,7 @@ Resources:
       # StreamSpecification:
       #   StreamViewType: NEW_IMAGE
 
+
 ############## Dynamo Stream #################
 
   # OrdersStreamLambdaRole:
@@ -251,6 +252,7 @@ Resources:
   #     Role: !GetAtt OrdersStreamLambdaRole.Arn
 
 ############## Dynamo Stream #################
+
 
 ############## Authentication #################
 
