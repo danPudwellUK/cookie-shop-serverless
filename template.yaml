@@ -36,7 +36,7 @@ Resources:
       Roles:
         - !Ref CookiesLambdaRole
         - !Ref OrdersLambdaRole
-        - !Ref OrdersStreamLambdaRole
+        # - !Ref OrdersStreamLambdaRole
 
   CookiesTablePolicy:
     Type: AWS::IAM::Policy
@@ -53,7 +53,7 @@ Resources:
             Resource: !GetAtt CookiesDynamoTable.Arn
       Roles:
         - !Ref CookiesLambdaRole
-        - !Ref OrdersStreamLambdaRole
+        # - !Ref OrdersStreamLambdaRole
 
   OrdersTablePolicy:
     Type: AWS::IAM::Policy
@@ -68,24 +68,9 @@ Resources:
             Resource: !GetAtt OrdersDynamoTable.Arn
       Roles:
         - !Ref OrdersLambdaRole
-        - !Ref OrdersStreamLambdaRole
+        # - !Ref OrdersStreamLambdaRole
 
-  DynamoStreamPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: !Sub "dynamo-stream-policy"
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - dynamodb:DescribeStream
-              - dynamodb:GetRecords
-              - dynamodb:GetShardIterator
-              - dynamodb:ListStreams
-            Resource: !Sub '${OrdersDynamoTable.Arn}/stream/*'
-      Roles:
-        - !Ref OrdersStreamLambdaRole
+
 
   CookiesLambdaRole:
     Type: AWS::IAM::Role
@@ -101,19 +86,6 @@ Resources:
               - sts:AssumeRole
 
   OrdersLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - sts:AssumeRole
-    
-  OrdersStreamLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -186,19 +158,6 @@ Resources:
             Method: POST
       Role: !GetAtt OrdersLambdaRole.Arn
 
-  OrdersStreamLambda:
-    Type: 'AWS::Serverless::Function'
-    Properties:
-      Handler: 'orders_stream.handler'
-      CodeUri: .
-      Description: 'Update cookies quantity from order'
-      Policies:
-        - AWSLambdaExecute
-      Environment:
-        Variables:
-          COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
-      Role: !GetAtt OrdersStreamLambdaRole.Arn
-
   CookiesApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -234,43 +193,93 @@ Resources:
           KeyType: "HASH"
       SSESpecification:
         SSEEnabled: true
-      StreamSpecification:
-        StreamViewType: NEW_IMAGE
+      # StreamSpecification:
+      #   StreamViewType: NEW_IMAGE
 
-  OrdersStream:
-    Type: AWS::Lambda::EventSourceMapping
-    DependsOn:
-      - DynamoStreamPolicy
-    Properties:
-      BatchSize: 1
-      Enabled: True
-      EventSourceArn: !GetAtt OrdersDynamoTable.StreamArn
-      FunctionName: !GetAtt OrdersStreamLambda.Arn
-      StartingPosition: LATEST
+############## Dynamo Stream #################
 
+  # OrdersStreamLambdaRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service:
+  #               - lambda.amazonaws.com
+  #           Action:
+  #             - sts:AssumeRole
 
-  OrdersApiExecuteGroup:
-    Type: AWS::IAM::Group
-    Properties:
-      GroupName: "Orders-Api-Group"
-  OrdersApiExecutePolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: "Orders-Api-Execute-Policy"
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - execute-api:Invoke
-            Resource:
-              - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/orders/*"
-              - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/orders"
-      Groups:
-        - !Ref OrdersApiExecuteGroup
-  CookieShopUser:
-    Type: AWS::IAM::User
-    Properties:
-      Groups:
-        - !Ref OrdersApiExecuteGroup
-      UserName: "Cookie-Shop-User"
+  # DynamoStreamPolicy:
+  #   Type: AWS::IAM::Policy
+  #   Properties:
+  #     PolicyName: !Sub "dynamo-stream-policy"
+  #     PolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Action:
+  #             - dynamodb:DescribeStream
+  #             - dynamodb:GetRecords
+  #             - dynamodb:GetShardIterator
+  #             - dynamodb:ListStreams
+  #           Resource: !Sub '${OrdersDynamoTable.Arn}/stream/*'
+  #     Roles:
+  #       - !Ref OrdersStreamLambdaRole
+
+  # OrdersStream:
+  #   Type: AWS::Lambda::EventSourceMapping
+  #   DependsOn:
+  #     - DynamoStreamPolicy
+  #   Properties:
+  #     BatchSize: 1
+  #     Enabled: True
+  #     EventSourceArn: !GetAtt OrdersDynamoTable.StreamArn
+  #     FunctionName: !GetAtt OrdersStreamLambda.Arn
+  #     StartingPosition: LATEST
+
+  # OrdersStreamLambda:
+  #   Type: 'AWS::Serverless::Function'
+  #   Properties:
+  #     Handler: 'orders_stream.handler'
+  #     CodeUri: .
+  #     Description: 'Update cookies quantity from order'
+  #     Policies:
+  #       - AWSLambdaExecute
+  #     Environment:
+  #       Variables:
+  #         COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
+  #     Role: !GetAtt OrdersStreamLambdaRole.Arn
+
+############## Dynamo Stream #################
+
+############## Authentication #################
+
+  # OrdersApiExecuteGroup:
+  #   Type: AWS::IAM::Group
+  #   Properties:
+  #     GroupName: "Orders-Api-Group"
+  # OrdersApiExecutePolicy:
+  #   Type: AWS::IAM::Policy
+  #   Properties:
+  #     PolicyName: "Orders-Api-Execute-Policy"
+  #     PolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Action:
+  #             - execute-api:Invoke
+  #           Resource:
+  #             - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/orders/*"
+  #             - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/orders"
+  #     Groups:
+  #       - !Ref OrdersApiExecuteGroup
+  # CookieShopUser:
+  #   Type: AWS::IAM::User
+  #   Properties:
+  #     Groups:
+  #       - !Ref OrdersApiExecuteGroup
+  #     UserName: "Cookie-Shop-User"
+
+############## Authentication #################

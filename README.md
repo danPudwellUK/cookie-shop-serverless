@@ -19,4 +19,10 @@ Activity:
 
 3) Run the build
 
+4) Explore the project and created resources in Dynamo, Lambda, API Gateway
+
 4) Add a stream to our Orders DynamoDB
+When an order is placed it will now update the quantity of cookies left
+
+5) Add authentication
+The orders endpoint is now protected by IAM (AWS sigv4)

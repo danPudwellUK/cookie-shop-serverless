@@ -62,20 +62,20 @@ paths:
                 $ref: "#/components/schemas/OrderResponse"
         400:        
           description: Bad request
-      security:
-        - sigv4: []
+      # security:
+      #   - sigv4: []
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OrdersPostLambda.Arn}/invocations"
         passthroughBehavior: when_no_match
         httpMethod: POST
         type: aws_proxy
-securityDefinitions:
-  sigv4:
-    type: "apiKey"
-    name: "Authorization"
-    in: "header"
-    x-amazon-apigateway-authtype: "awsSigv4"
+# securityDefinitions:
+#   sigv4:
+#     type: "apiKey"
+#     name: "Authorization"
+#     in: "header"
+#     x-amazon-apigateway-authtype: "awsSigv4"
 components:
   schemas:
     CookieRequest:
