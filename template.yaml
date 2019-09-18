@@ -70,8 +70,6 @@ Resources:
         - !Ref OrdersLambdaRole
         # - !Ref OrdersStreamLambdaRole
 
-
-
   CookiesLambdaRole:
     Type: AWS::IAM::Role
     Properties:
