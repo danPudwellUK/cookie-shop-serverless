@@ -36,8 +36,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CookieResponse"
-        400:        
-          description: Bad request
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CookiesPostLambda.Arn}/invocations"
@@ -60,8 +58,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrderResponse"
-        400:        
-          description: Bad request
       # security:
       #   - sigv4: []
       x-amazon-apigateway-integration:
