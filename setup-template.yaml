@@ -8,12 +8,12 @@ Resources:
     Properties:
       Name: /build/SAM_S3_BUCKET
       Type: String
-      Value: cookie-shop-serverless-build-bucket
+      Value: cookie-shop-serverless-build-bucket-dan-pudwell
 
   CodebuildOutputS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: cookie-shop-serverless-build-bucket
+      BucketName: cookie-shop-serverless-build-bucket-dan-pudwell
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true

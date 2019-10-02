@@ -191,65 +191,65 @@ Resources:
           KeyType: "HASH"
       SSESpecification:
         SSEEnabled: true
-      # StreamSpecification:
-      #   StreamViewType: NEW_IMAGE
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
 
 ############## Dynamo Stream #################
 
-  # OrdersStreamLambdaRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: '2012-10-17'
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal:
-  #             Service:
-  #               - lambda.amazonaws.com
-  #           Action:
-  #             - sts:AssumeRole
+  OrdersStreamLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
 
-  # DynamoStreamPolicy:
-  #   Type: AWS::IAM::Policy
-  #   Properties:
-  #     PolicyName: !Sub "dynamo-stream-policy"
-  #     PolicyDocument:
-  #       Version: '2012-10-17'
-  #       Statement:
-  #         - Effect: Allow
-  #           Action:
-  #             - dynamodb:DescribeStream
-  #             - dynamodb:GetRecords
-  #             - dynamodb:GetShardIterator
-  #             - dynamodb:ListStreams
-  #           Resource: !Sub '${OrdersDynamoTable.Arn}/stream/*'
-  #     Roles:
-  #       - !Ref OrdersStreamLambdaRole
+  DynamoStreamPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "dynamo-stream-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:DescribeStream
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:ListStreams
+            Resource: !Sub '${OrdersDynamoTable.Arn}/stream/*'
+      Roles:
+        - !Ref OrdersStreamLambdaRole
 
-  # OrdersStream:
-  #   Type: AWS::Lambda::EventSourceMapping
-  #   DependsOn:
-  #     - DynamoStreamPolicy
-  #   Properties:
-  #     BatchSize: 1
-  #     Enabled: True
-  #     EventSourceArn: !GetAtt OrdersDynamoTable.StreamArn
-  #     FunctionName: !GetAtt OrdersStreamLambda.Arn
-  #     StartingPosition: LATEST
+  OrdersStream:
+    Type: AWS::Lambda::EventSourceMapping
+    DependsOn:
+      - DynamoStreamPolicy
+    Properties:
+      BatchSize: 1
+      Enabled: True
+      EventSourceArn: !GetAtt OrdersDynamoTable.StreamArn
+      FunctionName: !GetAtt OrdersStreamLambda.Arn
+      StartingPosition: LATEST
 
-  # OrdersStreamLambda:
-  #   Type: 'AWS::Serverless::Function'
-  #   Properties:
-  #     Handler: 'orders_stream.handler'
-  #     CodeUri: .
-  #     Description: 'Update cookies quantity from order'
-  #     Policies:
-  #       - AWSLambdaExecute
-  #     Environment:
-  #       Variables:
-  #         COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
-  #     Role: !GetAtt OrdersStreamLambdaRole.Arn
+  OrdersStreamLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'orders_stream.handler'
+      CodeUri: .
+      Description: 'Update cookies quantity from order'
+      Policies:
+        - AWSLambdaExecute
+      Environment:
+        Variables:
+          COOKIES_TABLE_NAME: !Ref CookiesDynamoTable
+      Role: !GetAtt OrdersStreamLambdaRole.Arn
 
 ############## Dynamo Stream #################
 
