@@ -28,9 +28,9 @@ Most services will be using the free tier so costs should be very minimal.
 1. Create a CodeBuild project
     * Connect your GitHub fork
     * This sets up our CI/CD pipeline
-1. Run the build
+    * Run the build
     * This build should create a new Cloudformation stack and create all the resources for us
-1. Explore the created resources in AWS - Dynamo, Lambda, API Gateway, IAM
+    * Explore the created resources in AWS - Dynamo, Lambda, API Gateway, IAM
 1. Use the API's
     * Go to API Gateway -> Stages -> Prod and get the Invoke URL
     * Use swagger to figure out what to send the API, then postman to call it
