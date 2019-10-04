@@ -36,6 +36,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CookieResponse"
+        400:
+          description: "Bad Request"
+      x-amazon-apigateway-request-validator: "Validate-body"
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CookiesPostLambda.Arn}/invocations"
@@ -58,8 +61,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrderResponse"
+        400:
+          description: "Bad Request"
       security:
         - sigv4: []
+      x-amazon-apigateway-request-validator: "Validate-body"
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OrdersPostLambda.Arn}/invocations"
@@ -113,3 +119,7 @@ components:
       properties:
         id:
           type: string
+  x-amazon-apigateway-request-validators:
+    Validate-body:
+      validateRequestParameters: false
+      validateRequestBody: true
