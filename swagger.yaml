@@ -82,7 +82,8 @@ components:
         description:
           type: string
         quantity:
-          type: string
+          type: integer
+          format: int32
     CookiesResponse:
       type: array
       items:
@@ -97,14 +98,16 @@ components:
         description:
           type: string
         quantity:
-          type: string
+          type: integer
+          format: int32
     OrderRequest:
       type: object
       properties:
-        id:
+        cookie_id:
           type: string
         quantity:
-          type: string
+          type: integer
+          format: int32
     OrderResponse:
       type: object
       properties:
