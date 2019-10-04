@@ -13,11 +13,10 @@ def handler(event, context):
         for record in event['Records']:
             entry = parse(record["dynamodb"]["NewImage"])
             cookie_item = dynamodb.get_item(Key={"id": entry['cookie_id']})["Item"]
-            print("************")
+
             print(cookie_item)
             cookie_item['quantity'] = cookie_item['quantity'] - entry['quantity']
-            print("************")
-            print(cookie_item)
+
             dynamodb.put_item(Item=cookie_item)
 
     except Exception as e:
