@@ -10,26 +10,32 @@ Most services will be using the free tier so costs should be very minimal.
 
 ### Prerequisites:
 1. Signup for an AWS account
-2. Fork this project into your GitHub account
-3. Python 3.7
-4. Postman
+1. Fork this project into your GitHub account
+1. Python 3.7
+1. Postman
+1. Set up a virtual environment
+1. Install dependancies
+    * boto3
+    * aws-dynamodb-parser
+    * coverage
 
 
 ### Activity:
-1. Run `source cookie-shop-env/bin/activate`
-2. Run unit tests `coverage run --branch --source='.' -m unittest` and coverage with `coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,cookie-shop-env/*` 
-3. Run the setup-template.yaml in AWS Cloudformation
-4. Create a CodeBuild project
+
+1. Run unit tests `coverage run --branch --source='.' -m unittest` and coverage with `coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,cookie-shop-env/*` 
+1. Run the setup-template.yaml in AWS Cloudformation (give the S3 bucket a globally unique name)
+1. Explore the created resources in AWS - S3 bucket, IAM
+1. Create a CodeBuild project
     * Connect your GitHub fork
     * This sets up our CI/CD pipeline
-5. Run the build
+1. Run the build
     * This build should create a new Cloudformation stack and create all the resources for us
-6. Explore the created resources in AWS - Dynamo, Lambda, API Gateway, IAM
-7. Add a stream to our Orders DynamoDB
+1. Explore the created resources in AWS - Dynamo, Lambda, API Gateway, IAM
+1. Add a stream to our Orders DynamoDB
     * Uncomment the stream stuff in template.yaml
     * When an order is placed it will now update the quantity of cookies left
     * Run unit tests and coverage again
-8. Add authentication
+1. Add authentication
     * Uncomment the authentication stuff in template.yaml and swagger.yaml
     * The orders endpoint is now protected by IAM (AWS sigv4)
     * To use, go to IAM User, create an access key and secret, then add to the request
