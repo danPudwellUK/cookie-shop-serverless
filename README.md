@@ -31,10 +31,12 @@ Most services will be using the free tier so costs should be very minimal.
 1. Run the build
     * This build should create a new Cloudformation stack and create all the resources for us
 1. Explore the created resources in AWS - Dynamo, Lambda, API Gateway, IAM
-1. Add a stream to our Orders DynamoDB
-    * Uncomment the stream stuff in template.yaml
-    * When an order is placed it will now update the quantity of cookies left
-    * Run unit tests and coverage again
+1. Use the API's
+    * Go to API Gateway -> Stages -> Prod and get the Invoke URL
+    * Use swagger to figure out what to send the API, then postman to call it
+    * Try the /cookies and /orders
+    * Check Dynamo tables and see your things
+    * When an order is placed it will update the quantity of cookies left
 1. Add authentication
     * Uncomment the authentication stuff in template.yaml and swagger.yaml
     * The orders endpoint is now protected by IAM (AWS sigv4)
