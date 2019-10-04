@@ -37,7 +37,6 @@ Most services will be using the free tier so costs should be very minimal.
     * Try the /cookies and /orders
     * Check Dynamo tables and see your things
     * When an order is placed it will update the quantity of cookies left
-1. Add authentication
-    * Uncomment the authentication stuff in template.yaml and swagger.yaml
-    * The orders endpoint is now protected by IAM (AWS sigv4)
-    * To use, go to IAM User, create an access key and secret, then add to the request
+1. Authentication
+    * The orders endpoint is protected by IAM (AWS sigv4)
+    * To use, go to the IAM User created, create an access key and secret, then add to the request

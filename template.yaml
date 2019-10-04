@@ -223,6 +223,7 @@ Resources:
               - dynamodb:GetRecords
               - dynamodb:GetShardIterator
               - dynamodb:ListStreams
+              - dynamodb:GetItem
             Resource: !Sub '${OrdersDynamoTable.Arn}/stream/*'
       Roles:
         - !Ref OrdersStreamLambdaRole
