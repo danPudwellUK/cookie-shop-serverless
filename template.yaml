@@ -53,7 +53,7 @@ Resources:
             Resource: !GetAtt CookiesDynamoTable.Arn
       Roles:
         - !Ref CookiesLambdaRole
-        # - !Ref OrdersStreamLambdaRole
+        - !Ref OrdersStreamLambdaRole
 
   OrdersTablePolicy:
     Type: AWS::IAM::Policy
@@ -223,7 +223,6 @@ Resources:
               - dynamodb:GetRecords
               - dynamodb:GetShardIterator
               - dynamodb:ListStreams
-              - dynamodb:GetItem
             Resource: !Sub '${OrdersDynamoTable.Arn}/stream/*'
       Roles:
         - !Ref OrdersStreamLambdaRole
