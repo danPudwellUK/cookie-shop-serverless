@@ -119,7 +119,7 @@ components:
       properties:
         id:
           type: string
-  x-amazon-apigateway-request-validators:
-    Validate-body:
-      validateRequestParameters: false
-      validateRequestBody: true
+x-amazon-apigateway-request-validators:
+  Validate-body:
+    validateRequestParameters: false
+    validateRequestBody: true
