@@ -26,7 +26,6 @@ Most services will be using the free tier so costs should be very minimal.
 1. Run the setup-template.yaml in AWS Cloudformation
     * Give the S3 bucket a globally unique name
     * If this fails it is most likely because Cloudformation cannot setup CodeBuild projects without first connecting to Github through OAuth. You should create a dummy CodeBuild project and connect to Github.
-    * Check the webhooks in GitHub.  There should be one webhook for pull requests and one for pushes, amend if not.
     * Explore the created resources in AWS - S3, IAM, CodeBuild
 1. Create a PR in the repo
     * This build should create a new Cloudformation stack (dev) and create all the resources for us

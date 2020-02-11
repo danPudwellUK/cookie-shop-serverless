@@ -168,7 +168,8 @@ Resources:
               - iam:GetRolePolicy
               - iam:DeleteRolePolicy
               - iam:UpdateAssumeRolePolicy
-            Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/${ServiceName}-*
+              - iam:GetGroup
+            Resource: "*"
           - Effect: Allow
             Action:
               - lambda:CreateFunction
@@ -196,15 +197,12 @@ Resources:
               - cloudformation:GetTemplateSummary
               - cloudformation:ListStacks
               - cloudformation:CreateChangeSet
-            Resource: "*"
-          - Effect: Allow
-            Action:
               - cloudformation:DescribeStacks
               - cloudformation:DescribeStackEvents
               - cloudformation:ExecuteChangeSet
               - cloudformation:DescribeChangeSet
               - cloudformation:DeleteStack
-            Resource: !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${ServiceName}-*
+            Resource: "*"
           - Effect: Allow
             Action:
               - logs:CreateLogGroup
@@ -224,6 +222,11 @@ Resources:
             Action:
               - cloudwatch:PutMetricAlarm
               - cloudwatch:DeleteAlarms
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - dynamodb:CreateTable
+              - dynamodb:DescribeTable
             Resource: "*"
       Roles:
         - !Ref CodebuildRole
