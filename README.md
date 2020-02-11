@@ -23,14 +23,14 @@ Most services will be using the free tier so costs should be very minimal.
 ### Activity:
 
 1. Run unit tests `coverage run --branch --source='.' -m unittest` and coverage with `coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,cookie-shop-env/*` 
-1. Run the setup-template.yaml in AWS Cloudformation (give the S3 bucket a globally unique name)
-1. Explore the created resources in AWS - S3 bucket, IAM
-1. Create a CodeBuild project
-    * Connect your GitHub fork
-    * This sets up our CI/CD pipeline
-    * Run the build
-    * This build should create a new Cloudformation stack and create all the resources for us
-    * Explore the created resources in AWS - Dynamo, Lambda, API Gateway, IAM
+1. Run the setup-template.yaml in AWS Cloudformation
+    * Give the S3 bucket a globally unique name
+    * If this fails it is most likely because Cloudformation cannot setup CodeBuild projects without first connecting to Github through OAuth. You should create a dummy CodeBuild project and connect to Github.
+    * Check the webhooks in GitHub.  There should be one webhook for pull requests and one for pushes, amend if not.
+    * Explore the created resources in AWS - S3, IAM, CodeBuild
+1. Create a PR in the repo
+    * This build should create a new Cloudformation stack (dev) and create all the resources for us
+    * Explore the created resources in AWS - Dynamo, Lambda, API Gateway, etc.
 1. Use the API's
     * Go to API Gateway -> Stages -> Prod and get the Invoke URL
     * Use swagger to figure out what to send the API, then postman to call it
