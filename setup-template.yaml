@@ -178,6 +178,7 @@ Resources:
               - iam:CreateUser
               - iam:DeleteUser
               - iam:RemoveUserFromGroup
+              - iam:ListAccessKeys
             Resource: "*"
           - Effect: Allow
             Action:
