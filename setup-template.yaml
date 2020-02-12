@@ -170,6 +170,7 @@ Resources:
               - iam:UpdateAssumeRolePolicy
               - iam:GetGroup
               - iam:CreateGroup
+              - iam:DeleteGroup
             Resource: "*"
           - Effect: Allow
             Action:
@@ -183,7 +184,7 @@ Resources:
               - lambda:TagResource
               - lambda:UntagResource
               - lambda:UpdateFunctionConfiguration
-            Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ServiceName}-stack-*
+            Resource: "*"
           - Effect: Allow
             Action:
               - apigateway:PUT
