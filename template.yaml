@@ -286,4 +286,23 @@ Resources:
         - !Ref OrdersApiExecuteGroup
       UserName: "Cookie-Shop-User"
 
+  CookieShopUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Status: Active
+      UserName: !Ref CookieShopUser
+
+  CookieShopUserAccessKeyParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /iam/ACCESS_KEY
+      Type: String
+      Value: !Ref CookieShopUserAccessKey
+  CookieShopUserSecretAccessKeyParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /iam/SECRET_KEY
+      Type: String
+      Value: !GetAtt CookieShopUserAccessKey.SecretAccessKey
+
 ############## Authentication #################
