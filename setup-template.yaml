@@ -151,6 +151,9 @@ Resources:
               - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ServiceName}/build/GITHUB_TOKEN
           - Effect: Allow
             Action:
+              - 
+          - Effect: Allow
+            Action:
               - s3:PutObject
               - s3:GetObject
               - s3:List*
@@ -180,6 +183,8 @@ Resources:
               - iam:RemoveUserFromGroup
               - iam:ListAccessKeys
               - iam:AddUserToGroup
+              - iam:CreateAccessKey
+              - iam:DeleteAccessKey
             Resource: "*"
           - Effect: Allow
             Action:
