@@ -283,7 +283,7 @@ Resources:
     Properties:
       Groups:
         - !Ref OrdersApiExecuteGroup
-      UserName: "Cookie-Shop-User"
+      UserName: !Sub Cookie-Shop-User-${ApiNameSuffix}
 
   CookieShopUserAccessKey:
     Type: AWS::IAM::AccessKey
