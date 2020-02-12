@@ -175,6 +175,8 @@ Resources:
               - iam:PutGroupPolicy
               - iam:GetGroupPolicy
               - iam:DeleteGroupPolicy
+              - iam:CreateUser
+              - iam:DeleteUser
             Resource: "*"
           - Effect: Allow
             Action:
