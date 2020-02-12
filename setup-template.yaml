@@ -194,6 +194,7 @@ Resources:
               - lambda:UpdateFunctionConfiguration
               - lambda:CreateEventSourceMapping
               - lambda:DeleteEventSourceMapping
+              - lambda:GetEventSourceMapping
             Resource: "*"
           - Effect: Allow
             Action:
