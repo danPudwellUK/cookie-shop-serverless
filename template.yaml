@@ -294,13 +294,13 @@ Resources:
   CookieShopUserAccessKeyParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /iam/ACCESS_KEY
+      Name: !Sub /iam/${ApiNameSuffix}/ACCESS_KEY
       Type: String
       Value: !Ref CookieShopUserAccessKey
   CookieShopUserSecretAccessKeyParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /iam/SECRET_KEY
+      Name: !Sub /iam/${ApiNameSuffix}/SECRET_KEY
       Type: String
       Value: !GetAtt CookieShopUserAccessKey.SecretAccessKey
 
