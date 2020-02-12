@@ -171,6 +171,9 @@ Resources:
               - iam:GetGroup
               - iam:CreateGroup
               - iam:DeleteGroup
+              - iam:GetUser
+              - iam:PutGroupPolicy
+              - iam:GetGroupPolicy
             Resource: "*"
           - Effect: Allow
             Action:
