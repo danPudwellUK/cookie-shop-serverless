@@ -146,6 +146,8 @@ Resources:
             Action:
               - ssm:GetParameters
               - ssm:PutParameter
+              - ssm:AddTagsToResource
+              - ssm:RemoveTagsFromResource
             Resource: "*"
           - Effect: Allow
             Action:
