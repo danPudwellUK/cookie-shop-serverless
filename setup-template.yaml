@@ -143,15 +143,10 @@ Resources:
             Resource:
               - !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ops.apigateway.amazonaws.com/AWSServiceRoleForAPIGateway
           - Effect: Allow
-            Action: ssm:GetParameters
-            Resource:
-              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ServiceName}/build/SAM_S3_BUCKET
-              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ServiceName}/build/GITHUB_OWNER
-              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ServiceName}/build/GITHUB_REPO
-              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ServiceName}/build/GITHUB_TOKEN
-          - Effect: Allow
             Action:
-              - 
+              - ssm:GetParameters
+              - ssm:PutParameter
+            Resource: "*"
           - Effect: Allow
             Action:
               - s3:PutObject
