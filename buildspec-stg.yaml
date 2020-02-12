@@ -1,0 +1,24 @@
+version: 0.2
+
+env:
+  variables:
+    SERVICE_NAME:             "cookie-shop-serverless"
+  parameter-store:
+    SAM_S3_BUCKET:            "/cookie-shop/build/SAM_S3_BUCKET"
+    GITHUB_OWNER:             "/cookie-shop/build/GITHUB_OWNER"
+    GITHUB_REPO:              "/cookie-shop/build/GITHUB_REPO"
+    GITHUB_TOKEN:             "/cookie-shop/build/GITHUB_TOKEN"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+    commands:
+      - pip3 install -q boto3 aws-sam-cli aws-dynamodb-parser
+
+  build:
+    commands:
+      - aws s3 cp swagger.yaml s3://$SAM_S3_BUCKET/stg/
+      - sam build -s src
+      - sam package --s3-bucket $SAM_S3_BUCKET --s3-prefix stg --output-template-file NewSamTemplate.yaml
+      - sam deploy --s3-bucket $SAM_S3_BUCKET --s3-prefix stg --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM --template-file NewSamTemplate.yaml --stack-name $SERVICE_NAME-stack --parameter-overrides ServiceName=$SERVICE_NAME S3Bucket=$SAM_S3_BUCKET/stg

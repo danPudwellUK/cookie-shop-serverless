@@ -1,63 +1,294 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-Description: Setup template for cookie-shop-serverless
+Description: Build template for Dev and Staging projects
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Service"
+        Parameters:
+          - ServiceName
+      - Label:
+          default: "GitHub Configuration"
+        Parameters:
+          - GitHubOwner
+          - GitHubRepo
+          - GitHubToken
+    ParameterLabels:
+      ServiceName:
+        default: Service Name
+      GitHubOwner:
+        default: Repo Owner
+      GitHubRepo:
+        default: Repo Name
+      GitHubToken:
+        default: Personal Access Token
+
+Parameters:
+  ServiceName:
+    Description: Enter a lower case, high level service name without environment details. Used to autofill service names. For example, your-service-name
+    Type: String
+  GitHubOwner:
+    Description: Owner of git repo to clone
+    Type: String
+  GitHubRepo:
+    Description: Repo to clone
+    Type: String
+  GitHubToken:
+    Description: The value of a GitHub Personal Access Token that has an API access to your repo
+    Type: String
 
 Resources:
+
+  # Parameters
+  GitHubOwnerParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub /${ServiceName}/build/GITHUB_OWNER
+      Type: String
+      Value: !Sub ${GitHubOwner}
+  GitHubRepoParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub /${ServiceName}/build/GITHUB_REPO
+      Type: String
+      Value: !Sub ${GitHubRepo}
+  GitHubTokenParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub /${ServiceName}/build/GITHUB_TOKEN
+      Type: String
+      Value: !Sub ${GitHubToken}
   SamS3BucketParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /build/SAM_S3_BUCKET
+      Name: !Sub /${ServiceName}/build/SAM_S3_BUCKET
       Type: String
-      Value: cookie-shop-serverless-build-bucket-dan-pudwell
-
+      Value: !Sub ${ServiceName}-${AWS::Region}-output
   CodebuildOutputS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: cookie-shop-serverless-build-bucket-dan-pudwell
+      BucketName: !Sub ${ServiceName}-${AWS::Region}-output
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
 
+  # Code Build Projects
+  CodebuildDevProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${ServiceName}-dev
+      ServiceRole: !GetAtt CodebuildRole.Arn
+      Artifacts:
+        Type: no_artifacts
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+      Source:
+        Auth:
+          Type: OAUTH
+        Location: !Sub https://github.com/${GitHubOwner}/${GitHubRepo}.git
+        Type: GITHUB
+        BuildSpec: buildspec-dev.yaml
+        GitCloneDepth: 30
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED
+      TimeoutInMinutes: 10
+  CodebuildStgProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${ServiceName}-stg
+      BadgeEnabled: true
+      ServiceRole: !GetAtt CodebuildRole.Arn
+      Artifacts:
+        Type: no_artifacts
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+      Source:
+        Auth:
+          Type: OAUTH
+        Location: !Sub https://github.com/${GitHubOwner}/${GitHubRepo}.git
+        Type: GITHUB
+        BuildSpec: buildspec-stg.yaml
+        GitCloneDepth: 30
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/master$
+      TimeoutInMinutes: 10
+
+  # Permissions
+  CodeBuildSharedPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${ServiceName}-${AWS::Region}-codebuild-shared-service-policy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - iam:CreateServiceLinkedRole
+            Resource:
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ops.apigateway.amazonaws.com/AWSServiceRoleForAPIGateway
+          - Effect: Allow
+            Action:
+              - ssm:GetParameters
+              - ssm:PutParameter
+              - ssm:AddTagsToResource
+              - ssm:RemoveTagsFromResource
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:GetObject
+              - s3:List*
+              - s3:DeleteObject
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - iam:GetRole
+              - iam:CreateRole
+              - iam:DeleteRole
+              - iam:AttachRolePolicy
+              - iam:DetachRolePolicy
+              - iam:PassRole
+              - iam:PutRolePolicy
+              - iam:GetRolePolicy
+              - iam:DeleteRolePolicy
+              - iam:UpdateAssumeRolePolicy
+              - iam:GetGroup
+              - iam:CreateGroup
+              - iam:DeleteGroup
+              - iam:GetUser
+              - iam:PutGroupPolicy
+              - iam:GetGroupPolicy
+              - iam:DeleteGroupPolicy
+              - iam:CreateUser
+              - iam:DeleteUser
+              - iam:RemoveUserFromGroup
+              - iam:ListAccessKeys
+              - iam:AddUserToGroup
+              - iam:CreateAccessKey
+              - iam:DeleteAccessKey
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - lambda:CreateFunction
+              - lambda:GetFunction
+              - lambda:GetFunctionConfiguration
+              - lambda:DeleteFunction
+              - lambda:AddPermission
+              - lambda:UpdateFunctionCode
+              - lambda:RemovePermission
+              - lambda:ListTags
+              - lambda:TagResource
+              - lambda:UntagResource
+              - lambda:UpdateFunctionConfiguration
+              - lambda:CreateEventSourceMapping
+              - lambda:DeleteEventSourceMapping
+              - lambda:GetEventSourceMapping
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - apigateway:PUT
+              - apigateway:POST
+              - apigateway:PATCH
+              - apigateway:DELETE
+              - apigateway:GET
+            Resource: !Sub arn:aws:apigateway:${AWS::Region}::/restapis*
+          - Effect: Allow
+            Action:
+              - cloudformation:ValidateTemplate
+              - cloudformation:GetTemplateSummary
+              - cloudformation:ListStacks
+              - cloudformation:CreateChangeSet
+              - cloudformation:DescribeStacks
+              - cloudformation:DescribeStackEvents
+              - cloudformation:ExecuteChangeSet
+              - cloudformation:DescribeChangeSet
+              - cloudformation:DeleteStack
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:DescribeLogGroups
+              - logs:DeleteLogGroup
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - SNS:CreateTopic
+              - SNS:GetTopicAttributes
+              - SNS:Subscribe
+              - SNS:DeleteTopic
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - cloudwatch:PutMetricAlarm
+              - cloudwatch:DeleteAlarms
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - dynamodb:CreateTable
+              - dynamodb:DescribeTable
+              - dynamodb:DeleteTable
+            Resource: "*"
+      Roles:
+        - !Ref CodebuildRole
   CodebuildRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: codebuild-cookie-shop-build-service-role
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AWSLambdaFullAccess
-        - arn:aws:iam::aws:policy/IAMFullAccess
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-        - arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator
-        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
-        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+      RoleName: !Sub ${ServiceName}-${AWS::Region}-codebuild-dev-service-role
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - codebuild.amazonaws.com
-            Action: 
-              - sts:AssumeRole
-
-  AmazonAPIGatewayPushToCloudWatchLogs:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: !Sub "apigateway-cloudwatchlogs-role"
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
+          Version: 2012-10-17
           Statement:
             - Effect: Allow
               Principal:
                 Service:
-                  - apigateway.amazonaws.com
+                  - codebuild.amazonaws.com
               Action:
                 - sts:AssumeRole
-        ManagedPolicyArns:
-          - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+  AmazonAPIGatewayPushToCloudWatchLogs:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ServiceName}-${AWS::Region}-logs-apigateway-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  # Api Gateway Account
   Account:
     Type: AWS::ApiGateway::Account
     Properties:
       CloudWatchRoleArn: !GetAtt AmazonAPIGatewayPushToCloudWatchLogs.Arn
+
+  # Log Groups
+  CodebuildDevLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/codebuild/${CodebuildDevProject}
+  CodebuildStgLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/codebuild/${CodebuildStgProject}

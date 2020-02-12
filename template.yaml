@@ -4,7 +4,13 @@ Description: An AWS Serverless Specification template for cookies
 Parameters:
   S3Bucket:
     Type : String
-    Default: "bucket value will be overriden in buildspec"
+    Default: bucket value will be overriden in buildspec
+  ServiceName:
+    Type: String
+    Default: stuff
+  ApiNameSuffix:
+    Type: String
+    Default: prod
 Globals:
   Function:
     Runtime: python3.7
@@ -159,14 +165,12 @@ Resources:
   CookiesApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: !Sub "cookie-shop-serverless-api"
+      Name: !Sub ${ServiceName}-apis-${ApiNameSuffix}
       DefinitionBody:
         'Fn::Transform':
           Name: 'AWS::Include'
           Parameters:
-            Location:
-              "Fn::Sub":
-                "s3://${S3Bucket}/swagger.yaml"
+            Location: !Sub s3://${S3Bucket}/swagger.yaml
       StageName: Prod
 
   CookiesDynamoTable:
@@ -281,5 +285,24 @@ Resources:
       Groups:
         - !Ref OrdersApiExecuteGroup
       UserName: "Cookie-Shop-User"
+
+  CookieShopUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Status: Active
+      UserName: !Ref CookieShopUser
+
+  CookieShopUserAccessKeyParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /iam/ACCESS_KEY
+      Type: String
+      Value: !Ref CookieShopUserAccessKey
+  CookieShopUserSecretAccessKeyParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /iam/SECRET_KEY
+      Type: String
+      Value: !GetAtt CookieShopUserAccessKey.SecretAccessKey
 
 ############## Authentication #################

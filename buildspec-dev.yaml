@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    SERVICE_NAME:             "cookie-shop-serverless"
+  parameter-store:
+    SAM_S3_BUCKET:            "/cookie-shop/build/SAM_S3_BUCKET"
+    GITHUB_OWNER:             "/cookie-shop/build/GITHUB_OWNER"
+    GITHUB_REPO:              "/cookie-shop/build/GITHUB_REPO"
+    GITHUB_TOKEN:             "/cookie-shop/build/GITHUB_TOKEN"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+    commands:
+      - pip3 install -q boto3 aws-sam-cli coverage aws-dynamodb-parser
+
+  pre_build:
+    commands:
+      - aws cloudformation validate-template --template-body file://template.yaml
+      - coverage run --branch --source='.' -m unittest
+      - coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,cookie-shop-env/*
+
+  build:
+    commands:
+      - export CLEAN_PR=$(echo $CODEBUILD_SOURCE_VERSION | tr '/' '-')
+      - aws s3 cp swagger.yaml s3://$SAM_S3_BUCKET/dev/$CLEAN_PR/
+      - sam build -s src
+      - sam package --s3-bucket $SAM_S3_BUCKET --s3-prefix dev/$CLEAN_PR --output-template-file NewSamTemplate.yaml
+      - sam deploy --s3-bucket $SAM_S3_BUCKET --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM --template-file NewSamTemplate.yaml --stack-name $SERVICE_NAME-stack-$CLEAN_PR --s3-prefix dev/$CLEAN_PR --parameter-overrides ServiceName=$SERVICE_NAME ApiNameSuffix=$CLEAN_PR S3Bucket=$SAM_S3_BUCKET/dev/$CLEAN_PR
