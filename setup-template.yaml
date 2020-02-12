@@ -177,6 +177,7 @@ Resources:
               - iam:DeleteGroupPolicy
               - iam:CreateUser
               - iam:DeleteUser
+              - iam:RemoveUserFromGroup
             Resource: "*"
           - Effect: Allow
             Action:
@@ -190,6 +191,8 @@ Resources:
               - lambda:TagResource
               - lambda:UntagResource
               - lambda:UpdateFunctionConfiguration
+              - lambda:CreateEventSourceMapping
+              - lambda:DeleteEventSourceMapping
             Resource: "*"
           - Effect: Allow
             Action:
