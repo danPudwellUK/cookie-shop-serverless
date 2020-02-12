@@ -176,7 +176,6 @@ Resources:
   CookiesDynamoTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
-      TableName: Cookies
       PrimaryKey:
         Name: id
         Type: String
@@ -263,7 +262,7 @@ Resources:
   OrdersApiExecuteGroup:
     Type: AWS::IAM::Group
     Properties:
-      GroupName: "Orders-Api-Group"
+      GroupName: !Sub Orders-Api-Group-${ApiNameSuffix}
   OrdersApiExecutePolicy:
     Type: AWS::IAM::Policy
     Properties:
