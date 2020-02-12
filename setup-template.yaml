@@ -169,6 +169,7 @@ Resources:
               - iam:DeleteRolePolicy
               - iam:UpdateAssumeRolePolicy
               - iam:GetGroup
+              - iam:CreateGroup
             Resource: "*"
           - Effect: Allow
             Action:
@@ -227,6 +228,7 @@ Resources:
             Action:
               - dynamodb:CreateTable
               - dynamodb:DescribeTable
+              - dynamodb:DeleteTable
             Resource: "*"
       Roles:
         - !Ref CodebuildRole

@@ -28,7 +28,7 @@ Most services will be using the free tier so costs should be very minimal.
     * If this fails it is most likely because Cloudformation cannot setup CodeBuild projects without first connecting to Github through OAuth. You should create a dummy CodeBuild project and connect to Github.
     * Explore the created resources in AWS - S3, IAM, CodeBuild, SSM
 1. Create a PR in the repo
-    * This build should create a new Cloudformation stack (dev) and create all the resources for us
+    * This build will use buildspec-dev.yaml and should create a new Cloudformation stack (dev) and create all the resources for us.  Note this will be a seperate stack for each PR.
     * Explore the created resources in AWS - Dynamo, Lambda, API Gateway, etc.
 1. Use the API's
     * Go to API Gateway -> Stages -> Prod and get the Invoke URL
