@@ -4,10 +4,10 @@ env:
   variables:
     SERVICE_NAME:             "cookie-shop-serverless"
   parameter-store:
-    SAM_S3_BUCKET:            "/cookie-shop/build/SAM_S3_BUCKET"
-    GITHUB_OWNER:             "/cookie-shop/build/GITHUB_OWNER"
-    GITHUB_REPO:              "/cookie-shop/build/GITHUB_REPO"
-    GITHUB_TOKEN:             "/cookie-shop/build/GITHUB_TOKEN"
+    SAM_S3_BUCKET:            "/cookie-shop-serverless/build/SAM_S3_BUCKET"
+    GITHUB_OWNER:             "/cookie-shop-serverless/build/GITHUB_OWNER"
+    GITHUB_REPO:              "/cookie-shop-serverless/build/GITHUB_REPO"
+    GITHUB_TOKEN:             "/cookie-shop-serverless/build/GITHUB_TOKEN"
 
 phases:
   install:
