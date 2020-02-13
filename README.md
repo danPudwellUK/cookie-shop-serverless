@@ -39,5 +39,3 @@ Most services will be using the free tier so costs should be very minimal.
 1. Authentication
     * The orders endpoint is protected by IAM (AWS sigv4)
     * To use, go to the IAM User created, create an access key and secret, then add to the request
-
-aadhshjdytffjytfhgjgh
