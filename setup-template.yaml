@@ -42,28 +42,34 @@ Parameters:
 Resources:
 
   # Parameters
+  ServiceNameParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: SERVICE_NAME
+      Type: String
+      Value: !Sub ${ServiceName}
   GitHubOwnerParameter:
     Type: "AWS::SSM::Parameter"
     Properties:
-      Name: !Sub /${ServiceName}/build/GITHUB_OWNER
+      Name: GITHUB_OWNER
       Type: String
       Value: !Sub ${GitHubOwner}
   GitHubRepoParameter:
     Type: "AWS::SSM::Parameter"
     Properties:
-      Name: !Sub /${ServiceName}/build/GITHUB_REPO
+      Name: GITHUB_REPO
       Type: String
       Value: !Sub ${GitHubRepo}
   GitHubTokenParameter:
     Type: "AWS::SSM::Parameter"
     Properties:
-      Name: !Sub /${ServiceName}/build/GITHUB_TOKEN
+      Name: GITHUB_TOKEN
       Type: String
       Value: !Sub ${GitHubToken}
   SamS3BucketParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Sub /${ServiceName}/build/SAM_S3_BUCKET
+      Name: SAM_S3_BUCKET
       Type: String
       Value: !Sub ${ServiceName}-${AWS::Region}-output
   CodebuildOutputS3Bucket:
