@@ -74,7 +74,7 @@ Resources:
             Resource: !GetAtt OrdersDynamoTable.Arn
       Roles:
         - !Ref OrdersLambdaRole
-        # - !Ref OrdersStreamLambdaRole
+        - !Ref OrdersStreamLambdaRole
 
   CookiesLambdaRole:
     Type: AWS::IAM::Role
