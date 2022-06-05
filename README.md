@@ -24,7 +24,7 @@ Most services will be using the free tier so costs should be very minimal.
 
 1. Run unit tests `coverage run --branch --source='.' -m unittest` and coverage with `coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,cookie-shop-env/*` 
 1. Run the setup-template.yaml in AWS Cloudformation
-    * Give the S3 bucket a globally unique name
+    * Give the S3 bucket a globally unique name (line 78)
     * If this fails it is most likely because Cloudformation cannot setup CodeBuild projects without first connecting to Github through OAuth. You should create a dummy CodeBuild project and connect to Github.
     * Explore the created resources in AWS - S3, IAM, CodeBuild, SSM
 1. Create a PR in the repo
