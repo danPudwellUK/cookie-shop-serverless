@@ -108,6 +108,8 @@ Resources:
       Handler: 'cookies.get_handler'
       CodeUri: .
       Description: 'Get cookies for order'
+      FunctionUrlConfig:
+        AuthType: NONE
       Policies:
         - AWSLambdaExecute
       Environment:
