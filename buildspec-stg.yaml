@@ -11,9 +11,9 @@ env:
 phases:
   install:
     runtime-versions:
-      python: 3.7
+      python: 3.9
     commands:
-      - pip3 install -q boto3 aws-sam-cli aws-dynamodb-parser
+      - pip install -q boto3 aws-dynamodb-parser
 
   build:
     commands:
