@@ -13,7 +13,7 @@ phases:
     runtime-versions:
       python: 3.7
     commands:
-      - pip3 install -q boto3 aws-sam-cli coverage aws-dynamodb-parser
+      - pip3 install -q boto3 coverage aws-dynamodb-parser
 
   pre_build:
     commands:
