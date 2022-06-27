@@ -11,7 +11,7 @@ Most services will be using the free tier so costs should be very minimal.
 ### Prerequisites:
 1. Signup for an AWS account
 1. Fork this project into your GitHub account
-1. Python 3.7
+1. Python 3.9
 1. Postman
 1. Set up a virtual environment
 1. Install dependancies
