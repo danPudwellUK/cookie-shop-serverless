@@ -13,7 +13,7 @@ Parameters:
     Default: prod
 Globals:
   Function:
-    Runtime: python3.7
+    Runtime: python3.9
     Timeout: 3
     MemorySize: 128
   Api:
