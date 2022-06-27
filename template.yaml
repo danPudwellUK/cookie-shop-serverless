@@ -106,7 +106,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: 'cookies.get_handler'
-      CodeUri: .
+      CodeUri: src/
       Description: 'Get cookies for order'
       FunctionUrlConfig:
         AuthType: NONE
