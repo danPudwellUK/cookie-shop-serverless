@@ -128,7 +128,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: 'cookies.post_handler'
-      CodeUri: .
+      CodeUri: src/
       Description: 'Add cookies to shop'
       Policies:
         - AWSLambdaExecute
@@ -148,7 +148,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: 'orders.post_handler'
-      CodeUri: .
+      CodeUri: src/
       Description: 'Order cookies'
       FunctionUrlConfig:
         AuthType: AWS_IAM
@@ -249,7 +249,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: 'orders_stream.handler'
-      CodeUri: .
+      CodeUri: src/
       Description: 'Update cookies quantity from order'
       Policies:
         - AWSLambdaExecute
