@@ -150,6 +150,8 @@ Resources:
       Handler: 'orders.post_handler'
       CodeUri: .
       Description: 'Order cookies'
+      FunctionUrlConfig:
+        AuthType: AWS_IAM
       Policies:
         - AWSLambdaExecute
       Environment:
