@@ -277,7 +277,6 @@ Resources:
           - Effect: Allow
             Action:
               - execute-api:Invoke
-              - lambda:InvokeFunctionUrl
             Resource:
               - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/orders/*"
               - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/orders"
