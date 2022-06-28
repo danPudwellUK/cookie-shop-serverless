@@ -18,6 +18,6 @@ phases:
   build:
     commands:
       - aws s3 cp swagger.yaml s3://$SAM_S3_BUCKET/stg/
-      - sam build -s src
+      - sam build
       - sam package --s3-bucket $SAM_S3_BUCKET --s3-prefix stg --output-template-file NewSamTemplate.yaml
       - sam deploy --s3-bucket $SAM_S3_BUCKET --s3-prefix stg --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM --template-file NewSamTemplate.yaml --stack-name $SERVICE_NAME-stack --parameter-overrides ServiceName=$SERVICE_NAME S3Bucket=$SAM_S3_BUCKET/stg
